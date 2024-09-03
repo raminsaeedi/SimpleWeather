@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://kit.fontawesome.com/89828c8343.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="search-box">
+      <input type="text" placeholder="Search" />
+      <button><i class="fas fa-search"></i></button>
+    </div>
+    <div class="weather-card hidden"> <!-- Add the hidden class here -->
+      <img class="weatherIcon" src="" alt="Weather Icon" />
+      <div class="temp"></div>
+      <h2 class="city"></h2>
+      <p class="description"></p>
+      <div class="d-flex">
+        <div class="humidity">
+          <i class="fas fa-tint icon-small"></i>
+          <p class="underwe">Humidity</p>
+          <p class="humidity-value"></p>
+        </div>
+        <div class="wind">
+          <i class="fas fa-wind icon-small"></i>
+          <p class="underwe">Wind Speed</p>
+          <p class="wind-value"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    const apiKey = "8f813f74b3c6ac3034589b5bad366984";
+    const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric";
+
+    const searchBox = document.querySelector(".search-box input");
+    const searchBtn = document.querySelector(".search-box button");
+    const weatherIcon = document.querySelector(".weatherIcon");
+    const weatherCard = document.querySelector(".weather-card"); // Reference to the weather card
+
+    async function NewWeather(city) {
+      try {
+        const response = await fetch(apiUrl + `&q=${city}` + `&appid=${apiKey}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        if (data && data.main) {
+          document.querySelector(".city").innerHTML = data.name;
+          document.querySelector(".temp").innerHTML = data.main.temp.toFixed(0) + "°C";
+          document.querySelector(".humidity-value").innerHTML = data.main.humidity + "%";
+          document.querySelector(".wind-value").innerHTML = data.wind.speed + " km/h";
+          document.querySelector(".description").innerHTML = data.weather[0].description;
+
+          // Set the weather icon based on the weather conditions
+          switch (data.weather[0].main) {
+            case "Clouds":
+              weatherIcon.src = "images/clouds.png";
+              break;
+            case "Rain":
+              weatherIcon.src = "images/rain.png";
+              break;
+            case "Drizzle":
+              weatherIcon.src = "images/drizzle.png";
+              break;
+            case "Mist":
+              weatherIcon.src = "images/mist.png";
+              break;
+            case "Clear":
+              weatherIcon.src = "images/clear.png";
+              break;
+            default:
+              weatherIcon.src = "images/default.png"; // Fallback image
+          }
+
+          weatherCard.classList.remove("hidden"); // Show the weather card when data is available
+        } else {
+          weatherCard.classList.add("hidden"); // Hide the weather card if no data is found
+          console.error("Unexpected data format:", data);
+        }
+      } catch (error) {
+        weatherCard.classList.add("hidden"); // Hide the weather card if there's an error
+        console.error("Error fetching weather data:", error);
+      }
+    }
+
+    function handleSearch() {
+      const city = searchBox.value;
+      if (city) {
+        NewWeather(city);
+      } else {
+        weatherCard.classList.add("hidden"); // Hide the weather card if no city is entered
+      }
+    }
+
+    searchBtn.addEventListener("click", handleSearch);
+
+    searchBox.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    });
+  </script>
+
+
+</body>
+
+</html>
