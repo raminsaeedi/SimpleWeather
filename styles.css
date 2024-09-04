@@ -54,7 +54,7 @@ body {
 }
 
 .weather-card {
-  background: linear-gradient(135deg, #ef484847, #6fb0d6);
+  background: linear-gradient(135deg, #4444449d, #6fb0d6);
   padding: 20px;
   border-radius: 20px;
   width: 350px;
